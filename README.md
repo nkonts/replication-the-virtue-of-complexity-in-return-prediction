@@ -9,3 +9,31 @@ The dataset referenced in the paper is available at Amit Goyal's [webpage](https
 
 ---
 
+
+# Notes about the model - Ridge Regression with Moore-Penrose pseudo-inverse:
+
+This is the formula from the paper. It has a run time of ~6mins for me.
+
+> ```beta = np.linalg.pinv(z*np.identity(nr_cols) +  (S.T @ S)/T) @ (R @ S)/T```
+
+Doing it with the normal inverse instead of the pseudo inverse has a run time of 25sec (not numerically stable if not full rank, numbers can get incredibly large).
+
+>```beta = np.linalg.inv(z*np.identity(nr_cols) +  (S.T @ S)/T) @ (R @ S)/T```
+
+*Note: I did not observe different results with inv() vs. pinv().*
+
+This formula (notice that the division by `T` is missing) is equivalent to the sklearn ridge regression but orders of magnitude slower (*numpy: 6mins, Sklearn: 45ms*)
+>```beta = np.linalg.pinv(z*np.identity(nr_cols) +  (S.T @ S)) @ (R @ S)```
+
+We can adjust multiply Ridge.alpha with `T` to get full equivalence:
+
+```
+np.linalg.pinv(z*np.identity(nr_cols) +  (S.T @ S)/T) @ (R @ S)/T
+== np.linalg.pinv(z*np.identity(nr_cols)*T/T +  (S.T @ S)/T) @ (R @ S)/T
+== np.linalg.pinv(T*z*np.identity(nr_cols) +  (S.T @ S))*T @ (R @ S)/T
+== np.linalg.pinv(T*z*np.identity(nr_cols) +  (S.T @ S)) @ (R @ S)
+```
+
+Since the Sklearn solution is overall 8.000 times faster compared to the original formular, I will proceed with that solution. 
+I did only test ~100 iterations in the comparision between `pinv()`, `inv()` and `Ridge()`.
+
