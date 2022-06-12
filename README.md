@@ -28,7 +28,7 @@ This formula (notice that the division by `T` is missing) is equivalent to the s
 We can adjust multiply Ridge.alpha with `T` to get full equivalence:
 
 ```
-np.linalg.pinv(z*np.identity(nr_cols) +  (S.T @ S)/T) @ (R @ S)/T
+   np.linalg.pinv(z*np.identity(nr_cols) +  (S.T @ S)/T) @ (R @ S)/T
 == np.linalg.pinv(z*np.identity(nr_cols)*T/T +  (S.T @ S)/T) @ (R @ S)/T
 == np.linalg.pinv(T*z*np.identity(nr_cols) +  (S.T @ S))*T @ (R @ S)/T
 == np.linalg.pinv(T*z*np.identity(nr_cols) +  (S.T @ S)) @ (R @ S)
@@ -37,3 +37,20 @@ np.linalg.pinv(z*np.identity(nr_cols) +  (S.T @ S)/T) @ (R @ S)/T
 Since the Sklearn solution is overall 8.000 times faster compared to the original formular, I will proceed with that solution. 
 I did only test ~100 iterations in the comparision between `pinv()`, `inv()` and `Ridge()`.
 
+# Result:
+
+## Different metrics for a 1-step ahead prediction with 12 data points and gamma==2 and 0.5:
+The baseline regression is indicated by a grey horizontal line. 
+### Gamma == 2
+![Metrics](plots/metrics_2.jpg "Metrics")
+### Gamma == 0.5
+![Metrics](plots/metrics_0.5.jpg "Metrics")
+
+## Sharpe Ratio for different gamma:
+The baseline regression is indicated by a grey horizontal line. 
+![Sharpe Ratio by Gamma](plots/gamma_SR.jpg "Sharpe Ratio by Gamma")
+
+## Market Timing positions vs NBER Recessions:
+![Forecast vs NBER Recessions](plots/result_forecast.jpg "Forecast vs NBER Recessions") 
+### Expected plot:
+![Expected plot](plots/expected_result.png "Expected plot")

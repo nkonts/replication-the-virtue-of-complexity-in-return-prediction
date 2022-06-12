@@ -12,15 +12,23 @@ class Backtest():
         for key, value in kwargs.items():
             setattr(self, key, value)
 
-    def predict(self, X: np.array, y: np.array) -> pd.DataFrame:
+    def predict(self, X: np.array, y: np.array):
+        """Trains a ridge regression on T training samples and creates a 1-step ahead prediction.
+        'Timing Strategy' is the return of the forecast weighted by its forecast value. Both 'Timing Strategy' and 'Market Return'
+        are 1-step ahead and refer to the next month. E.g. for Index 2020-01-01, those values refer to the return in 2020-02-01.
+
+        Args:
+            X (np.array): independent variables
+            y (np.array): dependent variable
+        """
         backtest = []
         T_max, self.P = X.shape
         self.c = self.P / self.T
 
         index = list(range(self.T, T_max))
         for t in index:
-            S_train = X[t-12:t].astype(self.use_type)
-            R_train = y[t-12:t].astype(self.use_type)
+            S_train = X[t-self.T:t].astype(self.use_type)
+            R_train = y[t-self.T:t].astype(self.use_type)
 
             S_test = X[t:t+1].astype(self.use_type)
             R_test = y[t:t+1].astype(self.use_type)
@@ -28,6 +36,7 @@ class Backtest():
             # Ridge.alpha is adjusted by T to get the same results as in the paper. 
             beta = Ridge(alpha=(self.z*self.T), solver="svd", fit_intercept=False, normalize=False).fit(S_train, R_train).coef_
             forecast = S_test @ beta
+            # Keep in mind that R_test is 1-step ahead, thus it satisfies beta'*S_t*R_t+1
             timing_strategy = forecast * R_test
 
             backtest.append({
@@ -40,7 +49,6 @@ class Backtest():
         # The last value for market_return is NaN since it is predicting the next month
         self.backtest = pd.DataFrame(backtest).set_index("index")
         self.prediction = self.backtest["forecast"]
-        #self.backtest = self.backtest.dropna()
         return self
 
 
