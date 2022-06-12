@@ -47,7 +47,8 @@ The baseline regression is indicated by a grey horizontal line.
 ![Metrics](plots/metrics_0.5.jpg "Metrics")
 
 ## Sharpe Ratio for different gamma:
-The baseline regression is indicated by a grey horizontal line. 
+The baseline regression is indicated by a grey horizontal line.  
+
 ![Sharpe Ratio by Gamma](plots/gamma_SR.jpg "Sharpe Ratio by Gamma")
 
 ## Market Timing positions vs NBER Recessions:
