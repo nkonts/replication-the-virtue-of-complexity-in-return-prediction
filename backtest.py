@@ -4,13 +4,12 @@ from sklearn.linear_model import Ridge, LinearRegression
 from sklearn.metrics import r2_score, precision_score, recall_score, accuracy_score
 
 class Backtest():
-    def __init__(self, **kwargs):
-        self.z = 1000
-        self.T = 12
+    def __init__(self, z: int=1000, T: int=12, use_type=np.float32):
+        self.z = z
+        self.T = T
         self.use_type = np.float32
-        
-        for key, value in kwargs.items():
-            setattr(self, key, value)
+        self.prediction = None
+        self.performance = None
 
     def predict(self, X: np.array, y: np.array):
         """Trains a ridge regression on T training samples and creates a 1-step ahead prediction.
@@ -65,13 +64,14 @@ class Backtest():
         alpha = market_reg.intercept_
 
         # Annualize returns
+        sqrt_time_factor = np.sqrt(time_factor)
         mean = data["timing_strategy"].mean()*time_factor
-        std = data["timing_strategy"].std()*np.sqrt(time_factor)
+        std = data["timing_strategy"].std()*sqrt_time_factor
         mean_market = data["market_return"].mean()*time_factor
 
         self.performance = {
             "beta_norm_mean" : data["beta_norm"].mean(),
-            "Market Sharpe Ratio" : (data["market_return"].mean()*time_factor) / (data["market_return"].std()*np.sqrt(time_factor)),
+            "Market Sharpe Ratio" : (data["market_return"].mean()*time_factor) / (data["market_return"].std()*sqrt_time_factor),
             "Expected Return" : mean,
             "Volatility" : std,
             "R2" : r2_score(data["market_return"], data["forecast"]),

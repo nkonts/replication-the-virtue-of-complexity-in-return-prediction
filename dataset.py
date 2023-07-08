@@ -16,9 +16,9 @@ def load_data():
     data_raw = pd.read_csv("data/PredictorData2021 - Monthly.csv")
     data_raw["yyyymm"] = pd.to_datetime(data_raw["yyyymm"], format='%Y%m', errors='coerce')
     data_raw["Index"] = data_raw["Index"].str.replace(",", "")
-    data_raw = data_raw.set_index("yyyymm")
+    data_raw.set_index("yyyymm", inplace=True)
     data_raw[data_raw.columns] = data_raw[data_raw.columns].astype(float)
-    data_raw = data_raw.rename({"Index":"prices"}, axis=1)
+    data_raw.rename(columns={"Index":"prices"}, inplace=True)
 
     # Calculate missing columns according to the explaination in m Welch and Goyal (2008) 
     data_raw["dfy"] = data_raw["BAA"] - data_raw["AAA"]
