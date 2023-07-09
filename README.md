@@ -9,6 +9,11 @@ The dataset referenced in the paper is available at Amit Goyal's [webpage](https
 
 ---
 
+**experiment.ipynb**: This notebook serves as a testing ground for the initial setup and validation of the model. It's where the dataset was replicated and a preliminary check was conducted to ensure that everything was functioning as expected. In other words, it's a single run-through of the model, used for quick prototyping and troubleshooting.
+
+**simulation.ipynb**: This notebook delves deeper into the process and is designed for more extensive replication. The code has been modularized for better organization and readability. This notebook executes the experiment in *500 iterations* to minimize the impact of variance introduced by the randomly generated RFF features. It's designed for more thorough, comprehensive, and reliable testing or simulation.
+
+---
 
 # Notes about the model - Ridge Regression with Moore-Penrose pseudo-inverse:
 
