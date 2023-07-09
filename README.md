@@ -12,7 +12,7 @@ The dataset referenced in the paper is available at Amit Goyal's [webpage](https
 
 # Notes about the model - Ridge Regression with Moore-Penrose pseudo-inverse:
 
-This is the formula from the paper. It has a run time of ~6mins for me.
+This is the formula from the paper. It has a run time of ~6mins for me and we will calculate *many* iterations where this will be used. The total runtime becomes unfeasable for my home computer.
 
 > ```beta = np.linalg.pinv(z*np.identity(nr_cols) +  (S.T @ S)/T) @ (R @ S)/T```
 
@@ -22,10 +22,10 @@ Doing it with the normal inverse instead of the pseudo inverse has a run time of
 
 *Note: I did not observe different results with inv() vs. pinv().*
 
-This formula (notice that the division by `T` is missing) is equivalent to the sklearn ridge regression but orders of magnitude slower (*numpy: 6mins, Sklearn: 45ms*)
+This formula (notice that the division by `T` is missing) is equivalent to the sklearn ridge regression but orders of magnitude slower compared to sklearn (*numpy: 6 mins, Sklearn: 45 ms*)
 >```beta = np.linalg.pinv(z*np.identity(nr_cols) +  (S.T @ S)) @ (R @ S)```
 
-We can adjust multiply Ridge.alpha with `T` to get full equivalence:
+We can adjust Ridge.alpha with `T` to get full equivalence between a manual numpy calculation and the more optimized code from sklearn:
 
 ```
    np.linalg.pinv(z*np.identity(nr_cols) +  (S.T @ S)/T) @ (R @ S)/T
@@ -34,13 +34,13 @@ We can adjust multiply Ridge.alpha with `T` to get full equivalence:
 == np.linalg.pinv(T*z*np.identity(nr_cols) +  (S.T @ S)) @ (R @ S)
 ```
 
-Since the Sklearn solution is overall 8.000 times faster compared to the original formular, I will proceed with that solution. 
-I did only test ~100 iterations in the comparision between `pinv()`, `inv()` and `Ridge()`.
+Since the Sklearn solution is overall 8.000 times faster compared to the original formula, I will proceed with that solution. 
+I did only test ~100 iterations in the comparision between `pinv()`, `inv()` and `Ridge()` to numerically check if this approach results in the same output.
 
 # Result:
 
 ## Different metrics for a 1-step ahead prediction with 12 data points and gamma==2 and 0.5:
-The baseline regression is indicated by a grey horizontal line. 
+The baseline regression is represented by a grey horizontal line. 
 ### Gamma == 2
 ![Metrics](plots/metrics_2.jpg "Metrics")
 ### Gamma == 0.5
