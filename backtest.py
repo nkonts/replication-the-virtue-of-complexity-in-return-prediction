@@ -33,7 +33,7 @@ class Backtest():
             R_test = y[t:t+1].astype(self.use_type)
 
             # Ridge.alpha is adjusted by T to get the same results as in the paper. 
-            beta = Ridge(alpha=(self.z*self.T), solver="svd", fit_intercept=False, normalize=False).fit(S_train, R_train).coef_
+            beta = Ridge(alpha=(self.z*self.T), solver="svd", fit_intercept=False).fit(S_train, R_train).coef_
             forecast = S_test @ beta
             # Keep in mind that R_test is 1-step ahead, thus it satisfies beta'*S_t*R_t+1
             timing_strategy = forecast * R_test
@@ -51,7 +51,7 @@ class Backtest():
         return self
 
 
-    def performance(self, time_factor:int = 12):
+    def calc_performance(self, time_factor:int = 12):
         """Calculates various performance metrics for the backtest.
 
         Args:
